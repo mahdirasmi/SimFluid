@@ -25,8 +25,8 @@ Vectors::Vectors(Grid& g,Property& f)
     P_next=P;
 }
 
-
-void Vectors::initilization_u(){
+void Vectors::initilization_u()
+{
     for (int j = 0; j < Ny; ++j)
         for (int i = 0; i <= Nx; ++i)
             u[j][i] = 0.0;

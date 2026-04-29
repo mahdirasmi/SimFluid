@@ -11,7 +11,7 @@ private:
     Vectors& field_vectors;
 public:
     double xsc, ysc, D;
-    double CYL_X0, CYL_X1, CYL_Y0, CYL_Y1;   // class members — assigned in constructor body
+    double CYL_X0, CYL_X1, CYL_Y0, CYL_Y1;   
     static constexpr double EPS = 1e-5;
 
     Cylinder(double xc, double yc, Grid& g, Vectors& v, double D_in);

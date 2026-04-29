@@ -21,13 +21,12 @@ public:
  
     void build_inlet_profile(InletType type);
 
-
     double get_inlet_u(int j) const { return inlet_profile[j]; }
 
-    double getinlet_average() const { return inletVel; }
+    double getinlet_average() const { return inletVel;  }
     double getrho()           const { return rho; }
     double getviscosity()     const { return viscosity; }
-    InletType getInletType()  const { return profile_type; }
+    InletType getInletType()  const { return profile_type;  }
 };
 
 #endif

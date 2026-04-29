@@ -16,8 +16,7 @@
 
 using namespace std;
 
-Solver::Solver(Grid &grid, Property &fluidprop, Vectors &vec, Cylinder &cyl,
-               bool AT_flag, const BoundaryConditions& bc, bool cylinder_present, bool Obc)
+Solver::Solver(Grid &grid, Property &fluidprop, Vectors &vec, Cylinder &cyl,bool AT_flag, const BoundaryConditions& bc, bool cylinder_present, bool Obc)
     : Domain_grid(grid),
       fluid_property(fluidprop),
       field_vectors(vec),
@@ -40,7 +39,7 @@ Solver::Solver(Grid &grid, Property &fluidprop, Vectors &vec, Cylinder &cyl,
 
     if (cylinder_present || Obc) {
     
-        initialdt = 0.1;
+        initialdt = 0.01;
     } else {
         
         initialdt = CFL_diff * min_dx * min_dx / nu;
@@ -308,7 +307,6 @@ void Solver::apply_top_bc(double dtt)
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-
 /***************** Interior Velocity Update *****************/
 void Solver::Interrior_Velocity(double timestep)
 {
@@ -406,7 +404,7 @@ void Solver::Interrior_Velocity(double timestep)
 
             double gamma = ((Domain_grid.dx(i - 1) + Domain_grid.dx(i)) / 2) * Domain_grid.dy(j);
 
-            double Ru_x     = -(m_e * ue     - m_w * uw     + m_n * un     - m_s * us)     + (diff_e     - diff_w     + diff_n     - diff_s);
+            double Ru_x     = -(m_e * ue - m_w * uw + m_n * un - m_s * us)     + (diff_e - diff_w + diff_n  - diff_s);
             double Ru_x_n_1 = -(m_e_n_1 * ue_n_1 - m_w_n_1 * uw_n_1 + m_n_n_1 * un_n_1 - m_s_n_1 * us_n_1) + (diff_e_n_1 - diff_w_n_1 + diff_n_n_1 - diff_s_n_1);
 
             field_vectors.uupp[j][i] = U_P + (dt / (rho * gamma)) * (ab1 * Ru_x + ab2 * Ru_x_n_1);
@@ -498,7 +496,7 @@ void Solver::Interrior_Velocity(double timestep)
 
             double gamma = Domain_grid.dx(i) * (Domain_grid.dy(j) + Domain_grid.dy(j - 1)) / 2;
 
-            double Ru_y     = -(m_e * ve     - m_w * vw     + m_n * vn     - m_s * vs)     + (diff_e     - diff_w     + diff_n     - diff_s);
+            double Ru_y     = -(m_e * ve   - m_w * vw  + m_n * vn  - m_s * vs)     + (diff_e - diff_w + diff_n - diff_s);
             double Ru_y_n_1 = -(m_e_n_1 * ve_n_1 - m_w_n_1 * vw_n_1 + m_n_n_1 * vn_n_1 - m_s_n_1 * vs_n_1) + (diff_e_n_1 - diff_w_n_1 + diff_n_n_1 - diff_s_n_1);
 
             field_vectors.vvpp[j][i] = V_P + (dt / (rho * gamma)) * (ab1 * Ru_y + ab2 * Ru_y_n_1);
@@ -590,6 +588,7 @@ void Solver::Guessiedel(double dtt)
             }
 
         } else {
+
             // ── CLOSED DOMAIN: all-cells sweep with Neumann-flag coefficients ─
             //
             // Key differences from the open-domain path:
@@ -627,7 +626,6 @@ void Solver::Guessiedel(double dtt)
                     double vpN=field_vectors.vvpp[j+1][i], vpS=field_vectors.vvpp[j][i];
                     double upE=field_vectors.uupp[j][i+1], upW=field_vectors.uupp[j][i];
 
-                    // RHS: same formula as standalone (rho*dx*dy/dt)*divergence
 
                     double rhs = (rho * Ae * An / dt) * (vpN - vpS + upE - upW);
                     double bp=-((rho*upE)*Ae-(rho*upW)*Aw+(rho*vpN)*An-(rho*vpS)*As)/dt;
@@ -663,6 +661,7 @@ void Solver::Guessiedel(double dtt)
     }
 }
 
+// Should be checked ..........?!!
 void Solver::ConjugateGradient(double dtt)
 {
     int    Nx  = Domain_grid.getNx();
@@ -673,12 +672,11 @@ void Solver::ConjugateGradient(double dtt)
 
     const bool open_path = has_cylinder || open_BC;
 
-    // ── Build active cell list ────────────────────────────────────────────────
     std::vector<std::pair<int,int>> fluid_cells;
     fluid_cells.reserve(Nx * Ny);
 
     if (open_path) {
-        // Interior cells only, skipping solid cylinder cells
+
         for (int j = 1; j < Ny - 1; ++j)
             for (int i = 1; i < Nx - 1; ++i) {
                 double x = Domain_grid.getX(i) + 0.5*Domain_grid.dx(i);
@@ -687,7 +685,7 @@ void Solver::ConjugateGradient(double dtt)
                     fluid_cells.push_back({j, i});
             }
     } else {
-        // All cells — boundary rows included with Neumann-flag stencil
+       
         for (int j = 0; j < Ny; ++j)
             for (int i = 0; i < Nx; ++i)
                 fluid_cells.push_back({j, i});
@@ -697,7 +695,7 @@ void Solver::ConjugateGradient(double dtt)
     auto apply_boundary = [&](std::vector<std::vector<double>>& P)
     {
         if (open_path) {
-            // Cylinder ghost-cell Neumann (dP/dn=0 at cylinder faces)
+        
             if (has_cylinder) {
                 for (int j = 1; j < Ny - 1; ++j)
                     for (int i = 1; i < Nx - 1; ++i) {
@@ -729,7 +727,7 @@ void Solver::ConjugateGradient(double dtt)
                 P[j][0]      = P[j][1];
                 P[j][Nx-1]   = P[j][Nx-2];
             }
-            // Pressure anchor — removes null-space for all-Neumann system
+            // Pressure anchor 
             P[0][0] = 0.0;
         }
     };
@@ -914,7 +912,7 @@ void Solver::solve(double ultimate_time)
     double dt  = initialdt;
 
     // Asymmetric perturbation to trigger vortex shedding (cylinder only)
-    // For cavity: no perturbation — initial field must be clean zero
+
     if (has_cylinder) {
         for (int j = 1; j < Ny; ++j)
             for (int i = 1; i < Nx - 1; ++i) {
@@ -1271,9 +1269,7 @@ void Solver::cavity_report()
     // ── u(y) at x=L/2  (CSV — compare with Ghia et al. 1982) ────────────────
     {
         std::ofstream f("cavity_u_profile.csv");
-        // Bug fix 1: header line was missing \n → all data merged onto one line
-        // Bug fix 2: every data row was missing \n → all values on one line
-        // Bug fix 3: << "" at end of each row wrote nothing; replaced with \n
+
         f << "y_over_L,u_over_Uref,y_m,u_ms\n";
         f << "0.0,0.0,0.0,0.0\n";   // bottom wall (y=0, u=0)
         for (int j = 0; j < Ny; ++j) {

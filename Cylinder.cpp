@@ -53,11 +53,9 @@ bool Cylinder::is_insideV(double /*xx*/, double /*yy*/, int j, int i) const
 }
 
 // -----------------------------------------------------------------------
-// get_faces
+// get_faces for postprocessing
 // -----------------------------------------------------------------------
-void Cylinder::get_faces(double /*xx*/, double /*yy*/,
-                         bool& lf, bool& rf, bool& bf, bool& tf,
-                         int j, int i) const
+void Cylinder::get_faces(double /*xx*/, double /*yy*/,bool& lf, bool& rf, bool& bf, bool& tf,int j, int i) const
 {
     const double eps = 1e-4;
     lf = rf = bf = tf = false;

@@ -9,7 +9,6 @@ using namespace std;
 
 // ============================================================
 //  CONSTRUCTOR 1 — UNIFORM
-//  Equal cell size everywhere.
 // ============================================================
 Grid::Grid(int Nx_total, int Ny_total, double Ld, double Hd)
     : meshType(MeshType::UNIFORM),
@@ -305,7 +304,7 @@ void Grid::mesh_generation()
 }
 
 // ============================================================
-//  Accessors
+//  Take aways
 // ============================================================
 double Grid::getX(int i) const { return x_c[i]; }
 double Grid::getY(int j) const { return y_c[j]; }

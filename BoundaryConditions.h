@@ -18,11 +18,11 @@ inline const char* bc_name(BCType t)
     }
 }
 
-// Inlet velocity profile shape (used when BCType::DIRICHLET on a velocity inlet)
+
 enum class InletType {
-    UNIFORM,    // u = value_u uniformly across the entire inlet height
-    PARABOLIC   // u = 1.5 * Uavg * (1 - ((y - y_mid) / (H/2))^2)
-                // gives a Poiseuille profile with the same bulk flow rate as UNIFORM
+    UNIFORM,    // u = uniform
+    PARABOLIC   // u = 2 * Uavg * (1 - ((y - y_mid) / (H/2))^2)
+               
 };
 
 inline const char* inlet_name(InletType t)

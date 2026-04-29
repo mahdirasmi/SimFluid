@@ -42,7 +42,6 @@ public:
     int  pressure_solver = 0;   // 0 = Gauss-Seidel,  1 = Conjugate Gradient
     bool AT = false;
 
-    // FIX: removed Ultime parameter — constructor in .cpp does not take it
     Solver(Grid& grid, Property& fluidprop, Vectors& vec_vec, Cylinder& cy,
            bool AT_flag, const BoundaryConditions& bc, bool cylinder_present,bool OBC);
 

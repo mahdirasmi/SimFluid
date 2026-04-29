@@ -10,7 +10,7 @@ public:
     enum class MeshType {
         UNIFORM,              // equal cell sizes everywhere
         NONUNIFORM_CYL,       // 3-block stretching around a square cylinder
-        NONUNIFORM_Symmetry   // symmetric wall refinement (cavity / duct)
+        NONUNIFORM_Symmetry   // symmetric wall refinement 
     };
 
     // ── Constructor 1: Uniform ───────────────────────────────────────────────
@@ -27,7 +27,7 @@ public:
 
     // ── Constructor 3: Non-uniform symmetric ────────────────────────────────
     //   Cells grow from each wall toward the centre.
-    //   growth_rate > 1  (typical: 1.05 – 1.15)
+    //   growth_rate > 1  
     Grid(int Nx_total, int Ny_total,
          double Ld, double Hd,
          double growth_rate);

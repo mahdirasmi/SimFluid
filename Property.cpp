@@ -27,7 +27,7 @@ void Property::build_inlet_profile(InletType type)
     } else {
       
         double y_mid = 0.5 * H;
-        double R     = 0.5 * H;   // half-channel height (radius)
+        double R     = 0.5 * H;   // half-channel height 
         for (int j = 0; j < Ny; ++j) {
             double yc = grid.getY(j) + 0.5 * grid.dy(j);  // cell centre
             double eta = (yc - y_mid) / R;                 // -1 at walls, 0 at centre
