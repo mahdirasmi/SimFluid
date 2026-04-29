@@ -67,7 +67,7 @@ int main()
     // ================================== 2. Reynolds number=======================================================
     double Re = 100.0;
     std::cout << "Reynolds number Re: "; std::cin >> Re;
-    std::cout << "Density is set to 1.0 and viscosity is calculated accordingly.\n";
+    std::cout << "Density is set to 1.0 and viscosity is calculated accordingly.\n"<<std::endl;
 
     // ================================== 3. Square cylinder=======================================================
     bool has_cylinder = false;
@@ -84,7 +84,7 @@ int main()
     double Ultime = 0;
     bool   AT     = false;
     std::cout << "Ultimate time: "; std::cin >> Ultime;
-    std::cout << "Do you want Time averaging? (1=yes / 0=no): "; std::cin >> AT;
+    std::cout << std::endl<<"Do you want Time averaging? (1=yes / 0=no): "; std::cin >> AT;
 
     // ================================== 5. Boundary conditions=======================================================
     std::cout << "\n--- Boundary Conditions ---\n";
@@ -163,7 +163,7 @@ int main()
     Property property(1.0, Re, grid);
     Vectors  vectors(grid, property);
 
-    // FIX: place cylinder far outside domain when not present so is_inside always returns false
+   
     double cxc = has_cylinder ? Xc : -1e6;
     double cyc = has_cylinder ? Yc : -1e6;
     double cD  = has_cylinder ? D  : 1.0;
@@ -171,11 +171,7 @@ int main()
 
     vectors.initilization_u();
 
-    // Build the inlet velocity profile now that the grid is constructed.
-    // For open-flow cases (DIRICHLET left wall) the profile (uniform or
-    // parabolic) is stored in Property and applied every time step by
-    // apply_left_bc(). For all other cases (cavity, channel with symmetry
-    // etc.) the default uniform profile is harmless.
+
     property.build_inlet_profile(BC.left.inlet_type);
 
     vectors.u_old = vectors.u;  vectors.uupp   = vectors.u;  vectors.u_next = vectors.u;
@@ -198,7 +194,7 @@ int main()
         std::cout << "  Cylinder wall: No-slip (automatic)\n";
 
     // ================================== 11. Run=======================================================
-    // FIX: removed Ultime from constructor call — Solver no longer takes it
+    
     Solver solver(grid, property, vectors, cylinder, AT, BC, has_cylinder,open_BC);
     solver.pressure_solver = ps;
 
